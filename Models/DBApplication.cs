@@ -25,6 +25,7 @@ namespace Admin.Models
                 {
                     Produce produce = new Produce();
                     produce.produceId = (int)dt.Rows[i]["produce_id"]; // db column name
+                    produce.productId = (int)dt.Rows[i]["product_id"]; // db column name
                     produce.name = (string)dt.Rows[i]["name"];
                     produce.amount = (float)Convert.ToSingle(dt.Rows[i]["amount"]);
                     produce.price = (float)Convert.ToSingle(dt.Rows[i]["price"]);
@@ -64,6 +65,7 @@ namespace Admin.Models
             {
                 Produce produce = new Produce();
                 produce.produceId = (int)dt.Rows[0]["produce_id"]; // db column name
+                produce.productId = (int)dt.Rows[0]["product_id"]; // db column name
                 produce.name = (string)dt.Rows[0]["name"];
                 produce.amount = (float)Convert.ToSingle(dt.Rows[0]["amount"]);
                 produce.price = (float)Convert.ToSingle(dt.Rows[0]["price"]);
@@ -90,10 +92,11 @@ namespace Admin.Models
         {
             con.Open();
             Response response = new Response();
-            string Query = "INSERT INTO produce VALUES (default, @prod_name, 123123, @prod_amount, @prod_price)";
+            string Query = "INSERT INTO produce VALUES (default, @prod_name, @prod_id, @prod_amount, @prod_price)";
             NpgsqlCommand cmd = new NpgsqlCommand(Query, con);
 
             cmd.Parameters.AddWithValue("@prod_name", produce.name);
+            cmd.Parameters.AddWithValue("@prod_id", produce.productId);
             cmd.Parameters.AddWithValue("@prod_amount", Convert.ToDouble(produce.amount));
             cmd.Parameters.AddWithValue("@prod_price", (produce.price).ToString());
 
@@ -120,10 +123,11 @@ namespace Admin.Models
         {
             con.Open();
             Response response = new Response();
-            string Query = "update produce set @prod_name, 123123, @prod_amount, @prod_price where produce_id=@ID";
+            string Query = "UPDATE produce SET name = @prod_name, product_id = @prod_id, amount = @prod_amount, price = @prod_price WHERE produce_id = @ID";
             NpgsqlCommand cmd = new NpgsqlCommand(Query, con);
 
-            cmd.Parameters.AddWithValue("@prod_name", produce.name);
+            cmd.Parameters.AddWithValue("@prod_name", produce.name.ToString());
+            cmd.Parameters.AddWithValue("@prod_id", produce.productId);
             cmd.Parameters.AddWithValue("@prod_amount", Convert.ToDouble(produce.amount));
             cmd.Parameters.AddWithValue("@prod_price", (produce.price).ToString());
             cmd.Parameters.AddWithValue("@ID", produce.produceId);

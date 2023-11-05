@@ -65,7 +65,7 @@ namespace Admin.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateStudent")]
+        [Route("UpdateProduce")]
 
         public Response UpdateProduce(Produce produce)
         {
