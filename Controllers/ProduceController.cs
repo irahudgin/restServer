@@ -18,6 +18,56 @@ namespace Admin.Controllers
             _configuration = configuration;
         }
 
+        [HttpPut]
+        [Route("ProduceSaleUpdate")]
+
+        public Response ProduceSaleUpdate(Produce produce)
+        {
+            Response response = new Response();
+            NpgsqlConnection con = new NpgsqlConnection(_configuration.GetConnectionString("produceConnection"));
+            DBApplication dbA = new DBApplication();
+
+            response = dbA.UpdateProduce(con, produce);
+
+            return response;
+
+        }
+
+        [HttpPost]
+        [Route("AddSale")]
+
+        public Response AddSale(Sales sale)
+        {
+            Response response = new Response();
+            NpgsqlConnection con = new NpgsqlConnection(_configuration.GetConnectionString("produceConnection"));
+            DBApplication dbA = new DBApplication();
+
+
+            response = dbA.AddSale(con, sale);
+
+            return response;
+        }
+
+        [HttpGet] // the GetAllStudents API is going to generate a get request
+        [Route("GetProducebyProductId/{id}")] // give api name
+
+        public Response GetProducebyProductId(int id)
+
+        {
+            Response response = new Response();
+
+
+            NpgsqlConnection con = new NpgsqlConnection(_configuration.GetConnectionString("produceConnection"));
+
+            DBApplication dBApplication = new DBApplication();
+
+            response = dBApplication.GetProducebyProductId(con, id);
+
+            return response;// returning response to client
+        }
+
+
+
         [HttpGet] // the GetAllStudents API is going to generate a get request
         [Route("GetAllProduce")] // give api name
 

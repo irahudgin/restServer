@@ -5,6 +5,100 @@ namespace Admin.Models
 {
     public class DBApplication
     {
+
+        public Response ProduceSaleUpdate(NpgsqlConnection con, Produce produce)
+        {
+            con.Open();
+            Response response = new Response();
+            string Query = "update produce set amount = amount - @amount where product_id = @prodId";
+            NpgsqlCommand cmd = new NpgsqlCommand(Query, con);
+
+            cmd.Parameters.AddWithValue("@prodId", produce.productId);
+            cmd.Parameters.AddWithValue("@amount", Convert.ToDouble(produce.amount));
+
+            int i = cmd.ExecuteNonQuery();
+
+            if (i > 0)
+            {
+                response.statusCode = 200;
+                response.messageCode = "updated successfully";
+            }
+            else
+            {
+                response.statusCode = 100;
+                response.messageCode = "update failed or id wasnt in right form";
+            }
+
+            con.Close();
+
+            return response;
+        }
+        public Response AddSale(NpgsqlConnection con, Sales sale)
+        {
+            con.Open();
+            Response response = new Response();
+            string Query = "insert into sale values (default, @custname, @prodId, @amountBought)";
+            NpgsqlCommand cmd = new NpgsqlCommand(Query, con);
+
+            cmd.Parameters.AddWithValue("@custname", sale.customerName);
+            cmd.Parameters.AddWithValue("@prodId", sale.productId);
+            cmd.Parameters.AddWithValue("@amountBought", sale.amountBought);
+
+            int i = cmd.ExecuteNonQuery();
+
+            if (i > 0)
+            {
+                response.statusCode = 200;
+                response.messageCode = "Successfully inserted";
+                response.sale = sale;
+                response.sales = null;
+            }
+            else
+            {
+                response.statusCode = 100;
+                response.messageCode = "Something went wrong";
+                response.sale = null;
+                response.sales = null;
+            }
+            return response;
+        }
+
+        public Response GetProducebyProductId(NpgsqlConnection con, int id)
+        {
+            Response response = new Response();
+            string Query = "select * from produce where product_id = '"+id+"'";
+            NpgsqlDataAdapter da = new NpgsqlDataAdapter(Query, con);
+
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            if (dt.Rows.Count > 0)
+            {
+                Produce produce = new Produce();
+                produce.produceId = (int)dt.Rows[0]["produce_id"]; // db column name
+                produce.productId = (int)dt.Rows[0]["product_id"]; // db column name
+                produce.name = (string)dt.Rows[0]["name"];
+                produce.amount = (float)Convert.ToSingle(dt.Rows[0]["amount"]);
+                produce.price = (float)Convert.ToSingle(dt.Rows[0]["price"]);
+
+
+                // confirgure response
+                response.statusCode = 200;
+                response.messageCode = "Successfully retrieved";
+                response.produce = produce;
+                response.produces = null;
+            }
+            else
+            {
+                response.statusCode = 100;
+                response.messageCode = "Data couldnt be found";
+                response.produces = null;
+                response.produce = null;
+            }
+
+            return response;
+        }
+
         public Response GetAllProduce(NpgsqlConnection con)
         {
             string Query = "select * from produce";
